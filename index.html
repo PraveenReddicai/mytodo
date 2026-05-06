@@ -2,46 +2,93 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--ink:#1a1612;--ink2:#6b6156;--ink3:#b5afa8;--surface:#faf8f4;--card:#fff;--accent:#c17b3a;--accent-l:#f5ede0;--line:rgba(26,22,18,0.10);--danger:#c0392b}
+:root{--ink:#1a1612;--ink2:#6b6156;--ink3:#b5afa8;--surface:#faf8f4;--card:#fff;--accent:#c17b3a;--accent-l:#f5ede0;--line:rgba(26,22,18,0.10);--danger:#c0392b;--danger-l:rgba(192,57,43,0.08);--warn:#b45309;--warn-l:rgba(180,83,9,0.08);--ok:#1e8a4e;--ok-l:rgba(39,174,96,0.08)}
 @media(prefers-color-scheme:dark){:root{--ink:#f0ece4;--ink2:#a89e92;--ink3:#6b6156;--surface:#1a1612;--card:#23201b;--accent:#e09a58;--accent-l:#2e200f;--line:rgba(240,236,228,0.10)}}
-body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);min-height:100vh}
 .app{max-width:600px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
-.header{margin-bottom:2.5rem}
-.header h1{font-family:'DM Serif Display',serif;font-size:clamp(2rem,6vw,3rem);font-weight:400;line-height:1;letter-spacing:-0.02em;color:var(--ink)}
+.header{margin-bottom:2rem}
+.header h1{font-family:'DM Serif Display',serif;font-size:clamp(2rem,6vw,3rem);font-weight:400;line-height:1;letter-spacing:-0.02em}
 .header h1 em{color:var(--accent);font-style:italic}
 .date-line{font-size:12px;color:var(--ink3);letter-spacing:0.08em;text-transform:uppercase;margin-top:6px;font-weight:500}
-.add-row{display:flex;gap:8px;margin-bottom:2rem;position:relative}
-.add-row input{flex:1;border:none;border-bottom:1.5px solid var(--line);background:transparent;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);padding:10px 0;outline:none;transition:border-color 0.2s}
-.add-row input::placeholder{color:var(--ink3)}
-.add-row input:focus{border-bottom-color:var(--accent)}
-.cat-pill{display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:20px;border:1px solid var(--line);background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);cursor:pointer;white-space:nowrap;transition:background 0.15s,border-color 0.15s}
-.cat-pill:hover{background:var(--accent-l);border-color:var(--accent)}
-.cat-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.cat-pill i{font-size:13px}
-.add-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform 0.15s,opacity 0.15s;line-height:1}
-.add-btn:hover{transform:scale(1.08)}
-.add-btn:active{transform:scale(0.95)}
+
+/* add card */
+.add-card{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:1.75rem;transition:border-color 0.2s,box-shadow 0.2s;cursor:text}
+.add-card.focused{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+.add-top{display:flex;align-items:center;gap:10px}
+.add-icon{width:32px;height:32px;border-radius:50%;background:var(--accent-l);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;transition:background 0.2s}
+.add-card.focused .add-icon{background:var(--accent);color:#fff}
+.add-input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);outline:none;padding:4px 0}
+.add-input::placeholder{color:var(--ink3)}
+.add-expanded{overflow:hidden;max-height:0;opacity:0;transition:max-height 0.3s ease,opacity 0.2s ease,margin 0.2s}
+.add-card.focused .add-expanded{max-height:200px;opacity:1;margin-top:14px}
+
+.cat-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.cat-chip{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.cat-chip i{font-size:13px}
+.cat-chip:hover{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
+.cat-chip.sel-personal{background:rgba(193,123,58,0.12);border-color:var(--accent);color:var(--accent)}
+.cat-chip.sel-work{background:rgba(65,105,225,0.1);border-color:#4169e1;color:#2a56c6}
+.cat-chip.sel-health{background:rgba(39,174,96,0.12);border-color:#27ae60;color:#1e8a4e}
+.cat-chip.sel-urgent{background:rgba(192,57,43,0.1);border-color:var(--danger);color:var(--danger)}
+
+/* due date row */
+.due-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.due-label{font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.due-label i{font-size:14px}
+.due-input{border:1px solid var(--line);border-radius:8px;background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);padding:5px 10px;outline:none;cursor:pointer;transition:border-color 0.15s}
+.due-input:focus{border-color:var(--accent)}
+.due-input::-webkit-calendar-picker-indicator{opacity:0.5;cursor:pointer}
+.due-clear{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:14px;padding:2px;display:flex;align-items:center}
+.due-clear:hover{color:var(--danger)}
+
+.add-footer{display:flex;align-items:center;justify-content:space-between}
+.char-count{font-size:11px;color:var(--ink3)}
+.add-submit{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;border:none;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:transform 0.15s,opacity 0.15s}
+.add-submit:hover{transform:scale(1.04)}
+.add-submit:active{transform:scale(0.97)}
+.add-submit:disabled{opacity:0.4;cursor:default;transform:none}
+.add-submit i{font-size:14px}
+
+/* filters */
 .filters{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap}
 .filter-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--ink2);cursor:pointer;transition:all 0.15s}
 .filter-btn.active{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+
+/* stats */
+.stats{display:flex;gap:2rem;margin-bottom:1rem}
+.stat-num{font-family:'DM Serif Display',serif;font-size:1.75rem;font-weight:400;color:var(--ink);line-height:1}
+.stat-lbl{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
+.progress-bar{height:3px;background:var(--line);border-radius:2px;margin-bottom:2rem;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.4s ease}
+
+/* tasks */
 .section-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;color:var(--ink3);margin-bottom:10px;margin-top:1.5rem;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .task-list{display:flex;flex-direction:column;gap:2px}
-.task{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);animation:slideIn 0.2s ease;position:relative;group:true}
+.task{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);animation:slideIn 0.2s ease;position:relative}
 @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .task.done .task-text{color:var(--ink3);text-decoration:line-through;text-decoration-color:var(--ink3)}
-.check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ink3);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:1px;position:relative;overflow:hidden}
+.check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink3);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:1px}
 .check:hover{border-color:var(--accent)}
 .check.checked{background:var(--accent);border-color:var(--accent)}
 .check i{font-size:11px;color:#fff;opacity:0;transform:scale(0);transition:all 0.15s}
 .check.checked i{opacity:1;transform:scale(1)}
 .task-body{flex:1;min-width:0}
 .task-text{font-size:15px;line-height:1.5;color:var(--ink);word-break:break-word;transition:color 0.2s}
-.task-meta{display:flex;gap:8px;margin-top:4px;align-items:center;flex-wrap:wrap}
+.task-meta{display:flex;gap:8px;margin-top:5px;align-items:center;flex-wrap:wrap}
 .tag{font-size:11px;font-weight:500;letter-spacing:0.04em;padding:2px 8px;border-radius:10px}
 .tag.work{background:rgba(65,105,225,0.1);color:#2a56c6}
 .tag.personal{background:rgba(193,123,58,0.12);color:var(--accent)}
 .tag.health{background:rgba(39,174,96,0.12);color:#1e8a4e}
 .tag.urgent{background:rgba(192,57,43,0.1);color:var(--danger)}
+
+/* countdown badge */
+.countdown{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:10px;letter-spacing:0.02em}
+.countdown i{font-size:12px}
+.countdown.ok{background:var(--ok-l);color:var(--ok)}
+.countdown.warn{background:var(--warn-l);color:var(--warn)}
+.countdown.overdue{background:var(--danger-l);color:var(--danger)}
+.countdown.done-cd{background:var(--line);color:var(--ink3)}
+
 .task-time{font-size:11px;color:var(--ink3)}
 .del-btn{width:28px;height:28px;border:none;background:transparent;color:var(--ink3);cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s,background 0.15s;flex-shrink:0;font-size:14px}
 .task:hover .del-btn{opacity:1}
@@ -49,36 +96,46 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
 .empty{text-align:center;padding:3rem 1rem;color:var(--ink3)}
 .empty i{font-size:32px;margin-bottom:8px;display:block}
 .empty p{font-size:14px}
-.progress-bar{height:3px;background:var(--line);border-radius:2px;margin-bottom:2rem;overflow:hidden}
-.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.4s ease}
-.stats{display:flex;gap:2rem;margin-bottom:2rem}
-.stat{text-align:left}
-.stat-num{font-family:'DM Serif Display',serif;font-size:1.75rem;font-weight:400;color:var(--ink);line-height:1}
-.stat-lbl{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
 </style>
 
 <div class="app">
-  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">To-do app — manage your tasks</h2>
+  <h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">To-do app with due dates</h2>
   <div class="header">
     <h1>My <em>Tasks</em></h1>
     <p class="date-line" id="dateLabel"></p>
   </div>
 
-  <div class="add-row">
-    <input type="text" id="taskInput" placeholder="Add a new task…" maxlength="120" />
-    <select id="catSelect" style="border:none;border-bottom:1.5px solid var(--line);background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);padding:8px 4px;outline:none;cursor:pointer;appearance:auto">
-      <option value="personal">Personal</option>
-      <option value="work">Work</option>
-      <option value="health">Health</option>
-      <option value="urgent">Urgent</option>
-    </select>
-    <button class="add-btn" id="addBtn" title="Add task"><i class="ti ti-plus"></i></button>
+  <div class="add-card" id="addCard">
+    <div class="add-top">
+      <div class="add-icon" aria-hidden="true"><i class="ti ti-plus"></i></div>
+      <input class="add-input" id="taskInput" placeholder="What needs to be done?" maxlength="120" autocomplete="off"/>
+    </div>
+    <div class="add-expanded">
+      <div class="cat-row" id="catRow">
+        <button class="cat-chip sel-personal" data-cat="personal"><i class="ti ti-user" aria-hidden="true"></i>Personal</button>
+        <button class="cat-chip" data-cat="work"><i class="ti ti-briefcase" aria-hidden="true"></i>Work</button>
+        <button class="cat-chip" data-cat="health"><i class="ti ti-heart" aria-hidden="true"></i>Health</button>
+        <button class="cat-chip" data-cat="urgent"><i class="ti ti-flame" aria-hidden="true"></i>Urgent</button>
+      </div>
+      <div class="due-row">
+        <span class="due-label"><i class="ti ti-calendar-due" aria-hidden="true"></i>Due date</span>
+        <input type="datetime-local" class="due-input" id="dueInput"/>
+        <button class="due-clear" id="dueClear" title="Clear date" style="display:none"><i class="ti ti-x" aria-hidden="true"></i></button>
+      </div>
+      <div class="add-footer">
+        <span class="char-count" id="charCount">0 / 120</span>
+        <button class="add-submit" id="addBtn" disabled>
+          <i class="ti ti-circle-check" aria-hidden="true"></i> Add Task
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="filters">
     <button class="filter-btn active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="active">Active</button>
     <button class="filter-btn" data-filter="done">Done</button>
+    <button class="filter-btn" data-filter="overdue">Overdue</button>
     <button class="filter-btn" data-filter="work">Work</button>
     <button class="filter-btn" data-filter="personal">Personal</button>
     <button class="filter-btn" data-filter="health">Health</button>
@@ -89,8 +146,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
     <div class="stat"><div class="stat-num" id="totalCount">0</div><div class="stat-lbl">Total</div></div>
     <div class="stat"><div class="stat-num" id="doneCount">0</div><div class="stat-lbl">Done</div></div>
     <div class="stat"><div class="stat-num" id="leftCount">0</div><div class="stat-lbl">Left</div></div>
+    <div class="stat"><div class="stat-num" id="overdueCount">0</div><div class="stat-lbl">Overdue</div></div>
   </div>
-
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
 
   <div id="activeSection">
@@ -110,137 +167,164 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink)
 <script>
 const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const d=new Date();
-document.getElementById('dateLabel').textContent=days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate();
+const now=new Date();
+document.getElementById('dateLabel').textContent=days[now.getDay()]+', '+months[now.getMonth()]+' '+now.getDate();
 
-const KEY='tasks_v1';
+const KEY='tasks_v2';
 let tasks=[];
 try{tasks=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){}
 
+function futureTs(hoursFromNow){return Date.now()+hoursFromNow*3600000}
 if(!tasks.length){
   tasks=[
-    {id:1,text:'Review project proposal and leave feedback',cat:'work',done:false,ts:Date.now()-3600000},
-    {id:2,text:'30-min morning run',cat:'health',done:false,ts:Date.now()-1800000},
-    {id:3,text:'Call dentist to reschedule appointment',cat:'personal',done:true,ts:Date.now()-7200000},
-    {id:4,text:'Submit quarterly report by EOD',cat:'urgent',done:false,ts:Date.now()-900000},
+    {id:1,text:'Review project proposal and leave feedback',cat:'work',done:false,ts:Date.now()-3600000,due:futureTs(3)},
+    {id:2,text:'30-min morning run',cat:'health',done:false,ts:Date.now()-1800000,due:futureTs(18)},
+    {id:3,text:'Call dentist to reschedule appointment',cat:'personal',done:true,ts:Date.now()-7200000,due:null},
+    {id:4,text:'Submit quarterly report by EOD',cat:'urgent',done:false,ts:Date.now()-900000,due:futureTs(-1)},
   ];
   save();
 }
 
 let filter='all';
+let selCat='personal';
 
-function save(){
-  try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){}}
+
+function fmtCountdown(due,done){
+  if(!due)return null;
+  const diff=due-Date.now();
+  if(done)return{cls:'done-cd',icon:'ti-circle-check',txt:'Completed'};
+  if(diff<0){
+    const abs=Math.abs(diff);
+    const h=Math.floor(abs/3600000),m=Math.floor((abs%3600000)/60000);
+    const txt=h>48?Math.floor(h/24)+'d overdue':h>0?h+'h '+m+'m overdue':m+'m overdue';
+    return{cls:'overdue',icon:'ti-alert-circle',txt};
+  }
+  const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  let txt,cls,icon;
+  if(diff<3600000){txt=m+'m '+s+'s left';cls='overdue';icon='ti-clock-exclamation';}
+  else if(diff<86400000){txt=h+'h '+m+'m left';cls='warn';icon='ti-clock';}
+  else{const days=Math.floor(diff/86400000);txt=days+'d '+h%24+'h left';cls='ok';icon='ti-clock';}
+  return{cls,icon,txt};
 }
 
-function fmtTime(ts){
-  const diff=Date.now()-ts;
-  if(diff<60000)return'just now';
-  if(diff<3600000)return Math.floor(diff/60000)+'m ago';
-  if(diff<86400000)return Math.floor(diff/3600000)+'h ago';
-  return Math.floor(diff/86400000)+'d ago';
+function fmtDueLabel(due){
+  if(!due)return'';
+  const d=new Date(due);
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+const addCard=document.getElementById('addCard');
+const taskInput=document.getElementById('taskInput');
+const addBtn=document.getElementById('addBtn');
+const charCount=document.getElementById('charCount');
+const dueInput=document.getElementById('dueInput');
+const dueClear=document.getElementById('dueClear');
+
+// set min datetime to now
+function setMinDue(){
+  const n=new Date();
+  n.setSeconds(0,0);
+  dueInput.min=n.toISOString().slice(0,16);
+}
+setMinDue();
+
+taskInput.addEventListener('focus',()=>addCard.classList.add('focused'));
+taskInput.addEventListener('blur',e=>{if(!addCard.contains(e.relatedTarget))addCard.classList.remove('focused')});
+taskInput.addEventListener('input',()=>{
+  charCount.textContent=taskInput.value.length+' / 120';
+  addBtn.disabled=taskInput.value.trim().length===0;
+});
+taskInput.addEventListener('keydown',e=>{if(e.key==='Enter')addTask()});
+
+dueInput.addEventListener('change',()=>{dueClear.style.display=dueInput.value?'':'none'});
+dueClear.addEventListener('click',()=>{dueInput.value='';dueClear.style.display='none'});
+
+document.getElementById('catRow').addEventListener('click',e=>{
+  const chip=e.target.closest('.cat-chip');
+  if(!chip)return;
+  selCat=chip.dataset.cat;
+  document.querySelectorAll('.cat-chip').forEach(c=>{c.className='cat-chip'+(c.dataset.cat===selCat?' sel-'+selCat:'')});
+});
+
+addBtn.addEventListener('click',addTask);
+addCard.addEventListener('click',e=>{if(!addCard.classList.contains('focused'))taskInput.focus()});
+
+function addTask(){
+  const text=taskInput.value.trim();
+  if(!text)return;
+  const due=dueInput.value?new Date(dueInput.value).getTime():null;
+  tasks.unshift({id:Date.now(),text,cat:selCat,done:false,ts:Date.now(),due});
+  save();render();
+  taskInput.value='';dueInput.value='';dueClear.style.display='none';
+  charCount.textContent='0 / 120';addBtn.disabled=true;taskInput.focus();
+}
+
+function makeTask(t){
+  const el=document.createElement('div');
+  el.className='task'+(t.done?' done':'');
+  el.dataset.id=t.id;
+  const cd=fmtCountdown(t.due,t.done);
+  const cdHtml=cd?`<span class="countdown ${cd.cls}"><i class="ti ${cd.icon}" aria-hidden="true"></i>${cd.txt}</span>`:'';
+  const dueHtml=t.due&&!cd?`<span class="task-time">${fmtDueLabel(t.due)}</span>`:'';
+  el.innerHTML=`
+    <div class="check${t.done?' checked':''}" data-id="${t.id}" role="checkbox" aria-checked="${t.done}" tabindex="0">
+      <i class="ti ti-check" aria-hidden="true"></i>
+    </div>
+    <div class="task-body">
+      <div class="task-text">${escHtml(t.text)}</div>
+      <div class="task-meta">
+        <span class="tag ${t.cat}">${t.cat}</span>
+        ${cdHtml}${dueHtml}
+      </div>
+    </div>
+    <button class="del-btn" data-id="${t.id}" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button>`;
+  return el;
 }
 
 function render(){
   let visible=tasks;
   if(filter==='active')visible=tasks.filter(t=>!t.done);
   else if(filter==='done')visible=tasks.filter(t=>t.done);
+  else if(filter==='overdue')visible=tasks.filter(t=>!t.done&&t.due&&t.due<Date.now());
   else if(['work','personal','health','urgent'].includes(filter))visible=tasks.filter(t=>t.cat===filter);
 
   const active=visible.filter(t=>!t.done);
   const done=visible.filter(t=>t.done);
-
   const total=tasks.length,doneAll=tasks.filter(t=>t.done).length;
+  const overdueAll=tasks.filter(t=>!t.done&&t.due&&t.due<Date.now()).length;
+
   document.getElementById('totalCount').textContent=total;
   document.getElementById('doneCount').textContent=doneAll;
   document.getElementById('leftCount').textContent=total-doneAll;
+  document.getElementById('overdueCount').textContent=overdueAll;
   document.getElementById('progressFill').style.width=(total?Math.round(doneAll/total*100):0)+'%';
 
   const aList=document.getElementById('activeList');
   const dList=document.getElementById('doneList');
   aList.innerHTML='';dList.innerHTML='';
 
-  const makeTask=(t)=>{
-    const el=document.createElement('div');
-    el.className='task'+(t.done?' done':'');
-    el.dataset.id=t.id;
-    el.innerHTML=`
-      <div class="check${t.done?' checked':''}" data-id="${t.id}" role="checkbox" aria-checked="${t.done}" tabindex="0" title="${t.done?'Unmark':'Mark complete'}">
-        <i class="ti ti-check" aria-hidden="true"></i>
-      </div>
-      <div class="task-body">
-        <div class="task-text">${escHtml(t.text)}</div>
-        <div class="task-meta">
-          <span class="tag ${t.cat}">${t.cat}</span>
-          <span class="task-time">${fmtTime(t.ts)}</span>
-        </div>
-      </div>
-      <button class="del-btn" data-id="${t.id}" title="Delete task" aria-label="Delete task"><i class="ti ti-trash" aria-hidden="true"></i></button>
-    `;
-    return el;
-  };
-
-  if(active.length){
-    active.forEach(t=>aList.appendChild(makeTask(t)));
-    document.getElementById('activeSection').style.display='';
-  }else{
-    document.getElementById('activeSection').style.display='none';
-  }
-
-  if(done.length){
-    done.forEach(t=>dList.appendChild(makeTask(t)));
-    document.getElementById('doneSection').style.display='';
-  }else{
-    document.getElementById('doneSection').style.display='none';
-  }
-
-  document.getElementById('emptyState').style.display=(visible.length===0)?'':'none';
+  if(active.length){active.forEach(t=>aList.appendChild(makeTask(t)));document.getElementById('activeSection').style.display='';}
+  else document.getElementById('activeSection').style.display='none';
+  if(done.length){done.forEach(t=>dList.appendChild(makeTask(t)));document.getElementById('doneSection').style.display='';}
+  else document.getElementById('doneSection').style.display='none';
+  document.getElementById('emptyState').style.display=visible.length===0?'':'none';
 }
-
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-
-function addTask(){
-  const inp=document.getElementById('taskInput');
-  const text=inp.value.trim();
-  if(!text)return;
-  const cat=document.getElementById('catSelect').value;
-  tasks.unshift({id:Date.now(),text,cat,done:false,ts:Date.now()});
-  save();render();
-  inp.value='';inp.focus();
-}
-
-document.getElementById('addBtn').addEventListener('click',addTask);
-document.getElementById('taskInput').addEventListener('keydown',e=>{if(e.key==='Enter')addTask()});
 
 document.addEventListener('click',e=>{
   const ch=e.target.closest('.check');
-  if(ch){
-    const id=+ch.dataset.id;
-    const t=tasks.find(x=>x.id===id);
-    if(t){t.done=!t.done;save();render();}
-    return;
-  }
+  if(ch){const t=tasks.find(x=>x.id===+ch.dataset.id);if(t){t.done=!t.done;save();render();}return;}
   const del=e.target.closest('.del-btn');
-  if(del){
-    const id=+del.dataset.id;
-    tasks=tasks.filter(x=>x.id!==id);
-    save();render();
-    return;
-  }
+  if(del){tasks=tasks.filter(x=>x.id!==+del.dataset.id);save();render();return;}
   const fb=e.target.closest('.filter-btn');
-  if(fb){
-    filter=fb.dataset.filter;
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b===fb));
-    render();
-  }
+  if(fb){filter=fb.dataset.filter;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b===fb));render();}
 });
-
 document.addEventListener('keydown',e=>{
-  if(e.key===' '||e.key==='Enter'){
-    const ch=e.target.closest('.check');
-    if(ch){e.preventDefault();ch.click();}
-  }
+  if((e.key===' '||e.key==='Enter')&&e.target.closest('.check')){e.preventDefault();e.target.closest('.check').click();}
 });
 
 render();
+setInterval(render,10000);
 </script>
